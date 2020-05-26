@@ -76,24 +76,41 @@ int CALLBACK WinMain(
 	//// show the window
 	//ShowWindow(hWnd, SW_SHOW);
 
-	// Instantiate an object of type Window that call the constructor and create a window
-	Window wnd(800, 300, "First Box");
+	try
+	{
+		// Instantiate an object of type Window that call the constructor and create a window
+		Window wnd(800, 300, "First Box");
 
-	// message pump
-	MSG msg;
-	BOOL gResult;
-	while (gResult = GetMessage(&msg, nullptr, 0, 0) > 0)
+		// message pump
+		MSG msg;
+		BOOL gResult;
+		while (gResult = GetMessage(&msg, nullptr, 0, 0) > 0)
+		{
+			TranslateMessage(&msg);	// post a WM_CHAR message to the message queue
+			DispatchMessage(&msg);
+		}
+
+		if (gResult == -1)
+		{
+			return -1;
+		}
+		else
+		{
+			return msg.wParam;
+		}
+	}
+	catch (const MyException& e)
 	{
-		TranslateMessage(&msg);	// post a WM_CHAR message to the message queue
-		DispatchMessage(&msg);
+		MessageBox(nullptr, e.what(), e.GetType(), MB_OK | MB_ICONEXCLAMATION);
+	}
+	catch (const std::exception& e)
+	{
+		MessageBox(nullptr, e.what(), "Standard Exception", MB_OK | MB_ICONEXCLAMATION);
+	}
+	catch (...)
+	{
+		MessageBox(nullptr, "No details available", "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
 	}
 
-	if (gResult == -1)
-	{
-		return -1;
-	}
-	else
-	{
-		return msg.wParam;
-	}
+	return -1;
 }
