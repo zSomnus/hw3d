@@ -1,7 +1,7 @@
 //#include <Windows.h>
 //#include "WindowsMessageMap.h"
-//#include <sstream>
 #include "Window.h"
+#include <sstream>
 //
 //LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 //{
@@ -88,20 +88,56 @@ int CALLBACK WinMain(
 		{
 			TranslateMessage(&msg);	// post a WM_CHAR message to the message queue
 			DispatchMessage(&msg);
-			if (wnd.kbd.KeyIsPressed(VK_MENU))
+
+			// Test code
+			static int i = 0;
+			while (!wnd.mouse.IsEmpty())
 			{
-				MessageBox(nullptr, "Something happen!", "Space key was pressed", MB_OK | MB_ICONEXCLAMATION);
+				const auto e = wnd.mouse.Read();
+				switch (e.GetType())
+				{
+				case Mouse::Event::Type::Leave:
+					wnd.SetTitle("Gone!");
+					break;
+				case Mouse::Event::Type::Move:
+				{
+					std::ostringstream oss;
+					oss << "Mouse moved to (" << e.GetPosX() << ", " << e.GetPosY() << ")";
+					wnd.SetTitle(oss.str());
+				}
+				break;
+				case Mouse::Event::Type::WheelUp:
+					i++;
+					{
+						std::ostringstream oss;
+						oss << "Up: " << i;
+						wnd.SetTitle(oss.str());
+					}
+					break;
+				case Mouse::Event::Type::WheelDown:
+					i--;
+					{
+						std::ostringstream oss;
+						oss << "Down: " << i;
+						wnd.SetTitle(oss.str());
+					}
+					break;
+				}
 			}
+
+			//if (wnd.kbd.KeyIsPressed(VK_MENU))
+			//{
+			//	MessageBox(nullptr, "Something happen!", "Space key was pressed", MB_OK | MB_ICONEXCLAMATION);
+			//}
 		}
 
+		// Check if GetMessage call itself broke
 		if (gResult == -1)
 		{
-			return -1;
+			throw CHWND_LAST_EXCEPT();
 		}
-		else
-		{
-			return msg.wParam;
-		}
+		// wParam here is the value passed to PostQuitMessage
+		return msg.wParam;
 	}
 	catch (const MyException& e)
 	{
