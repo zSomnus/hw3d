@@ -122,12 +122,35 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	switch (msg)
 	{
 	case WM_CLOSE:
-		/** Only post the quit message here, not destroy the window
-			because we already destroy the window in the destructor "~Window()"
-			do not destroy it twice
+		/**Only post the quit message here, not destroy the window
+		  * because we already destroy the window in the destructor "~Window()"
+		  * do not destroy it twice
 		*/
 		PostQuitMessage(0);
 		return 0;
+
+		// Clear keystate when window loses focus to prevent zombie keys
+	case WM_KILLFOCUS:
+		kbd.ClearState();
+		break;
+
+		/************** KEYBOARD MESSAGES **************/
+	case WM_KEYDOWN:
+		// Syskey commands need to be handled to track ALT key (VK_MENU) and F10
+	case WM_SYSKEYDOWN:
+		if (!(lParam & 0x40000000) || kbd.AutorepeatIsEnable())
+		{
+			kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
+		}
+		break;
+	case WM_KEYUP:
+	case WM_SYSKEYUP:
+		kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
+		break;
+	case WM_CHAR:
+		kbd.OnChar(static_cast<unsigned char>(wParam));
+		break;
+		/************** END KEYBOARD MESSAGES **************/
 	}
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);

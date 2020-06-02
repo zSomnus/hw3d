@@ -88,6 +88,10 @@ int CALLBACK WinMain(
 		{
 			TranslateMessage(&msg);	// post a WM_CHAR message to the message queue
 			DispatchMessage(&msg);
+			if (wnd.kbd.KeyIsPressed(VK_MENU))
+			{
+				MessageBox(nullptr, "Something happen!", "Space key was pressed", MB_OK | MB_ICONEXCLAMATION);
+			}
 		}
 
 		if (gResult == -1)
