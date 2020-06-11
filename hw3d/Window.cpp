@@ -77,6 +77,8 @@ Window::Window(int width, int height, const char* name) : width(width), height(h
 
 	// Show window
 	ShowWindow(hWnd, SW_SHOWDEFAULT);
+	// Create graphics object
+	pGfx = std::make_unique<Graphics>(hWnd);
 }
 
 Window::~Window()
@@ -112,6 +114,12 @@ std::optional<int> Window::ProcessMessages()
 
 	// return empty optional when not quitting app
 	return {};
+}
+
+Graphics& Window::Gfx()
+{
+	// TODO: insert return statement here
+	return *pGfx;
 }
 
 LRESULT CALLBACK WINAPI Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
