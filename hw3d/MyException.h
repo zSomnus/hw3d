@@ -1,7 +1,7 @@
 #pragma once
 #include <exception>
 #include <string>
-class MyException :public std::exception
+class MyException : public std::exception
 {
 public:
 	MyException(int line, const char* file) noexcept;
