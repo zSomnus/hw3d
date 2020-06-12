@@ -46,10 +46,7 @@ Window::Window(int width, int height, const char* name) : width(width), height(h
 	wr.right = width + wr.left;
 	wr.top = 100;
 	wr.bottom = height + wr.top;
-	/*AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
-
-	throw std::runtime_error("This is a test error");*/
-
+	
 	if (AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE) == 0)
 	{
 		throw CHWND_LAST_EXCEPT();
@@ -261,7 +258,8 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 
 // Window Exception Stuff
 Window::HrException::HrException(int line, const char* file, HRESULT hr) noexcept
-	:Exception(line, file), hr(hr)
+	:Exception(line, file), 
+	hr(hr)
 {
 }
 

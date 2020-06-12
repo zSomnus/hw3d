@@ -2,7 +2,7 @@
 #include <sstream>
 #include <iomanip>
 
-App::App() : wnd(800, 300, "Main Window")
+App::App() : wnd(800, 600, "Main Window")
 {
 
 }
@@ -27,7 +27,8 @@ void App::DoFrame()
 	oss << "Time elapsed: " << std::setprecision(1) << std::fixed << t << "s";
 	wnd.SetTitle(oss.str());*/
 
-	const float c = sin(timer.Peek());
+	const float c = sin(timer.Peek()) / 2.0f + 0.5f;
 	wnd.Gfx().ClearBuffer(c, c, 1.0f);
+	wnd.Gfx().DrawTestTriangle();
 	wnd.Gfx().EndFrame();
 }
