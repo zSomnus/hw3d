@@ -9,7 +9,7 @@ cbuffer CBuf
 	// The keyword matrix indicates 4x4 float
 	// row_major is slower than using a transposed matrix
 	// The inverse of a rotation matrix is its transpose
-	row_major matrix transform;
+	matrix transform;
 };
 
 VSOut main(float4 pos : POSITION, float4 color : COLOR)
