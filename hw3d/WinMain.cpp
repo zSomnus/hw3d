@@ -47,7 +47,7 @@ int CALLBACK WinMain(
 {
 	try
 	{
-		return App{}.Update();
+		return App{}.Go();
 	}
 	catch (const MyException& e)
 	{

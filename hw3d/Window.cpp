@@ -1,5 +1,6 @@
 #include "Window.h"
 #include "WindowsMessageMap.h"
+#include "WindowsThrowMacros.h"
 #include <sstream>
 #include "resource.h"
 
