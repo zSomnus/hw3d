@@ -10,7 +10,6 @@ Box::Box(Graphics& gfx,
 	std::uniform_real_distribution<float>& odist,
 	std::uniform_real_distribution<float>& rdist,
 	std::uniform_real_distribution<float>& bdist)
-
 	:
 	r(rdist(rng)),
 	droll(ddist(rng)),
@@ -23,16 +22,18 @@ Box::Box(Graphics& gfx,
 	theta(adist(rng)),
 	phi(adist(rng))
 {
+	namespace dx = DirectX;
 
 	if (!IsStaticInitialized())
 	{
 		struct Vertex
 		{
-			DirectX::XMFLOAT3 pos;
+			dx::XMFLOAT3 pos;
 		};
 
 		auto model = Cube::Make<Vertex>();
-		model.Transform(DirectX::XMMatrixScaling(1.0f, 10.f, 1.2f));
+		model.Transform(DirectX::XMMatrixScaling(1.0f, 1.0f, 1.2f));
+
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, model.vertices));
 
 		auto pvs = std::make_unique<VertexShader>(gfx, L"ColorIndexVS.cso");
@@ -43,7 +44,7 @@ Box::Box(Graphics& gfx,
 
 		AddStaticIndexBuffer(std::make_unique<IndexBuffer>(gfx, model.indices));
 
-		struct PixelShaderConstant
+		struct PixelShaderConstants
 		{
 			struct
 			{
@@ -53,20 +54,20 @@ Box::Box(Graphics& gfx,
 				float a;
 			} face_colors[8];
 		};
-		const PixelShaderConstant cb2 =
+		const PixelShaderConstants cb2 =
 		{
 			{
-				{ 1.0f,1.0f,1.0f,1.0f },
-				{ 1.0f,0.0f,0.0f,1.0f },
-				{ 0.0f,1.0f,0.0f,1.0f },
-				{ 1.0f,1.0f,0.0f,1.0f },
-				{ 0.0f,0.0f,1.0f,1.0f },
-				{ 1.0f,0.0f,1.0f,1.0f },
-				{ 0.0f,1.0f,1.0f,1.0f },
-				{ 0.0f,0.0f,0.0f,1.0f },
+				{ 1.0f,1.0f,1.0f },
+				{ 1.0f,0.0f,0.0f },
+				{ 0.0f,1.0f,0.0f },
+				{ 1.0f,1.0f,0.0f },
+				{ 0.0f,0.0f,1.0f },
+				{ 1.0f,0.0f,1.0f },
+				{ 0.0f,1.0f,1.0f },
+				{ 0.0f,0.0f,0.0f }
 			}
 		};
-		AddStaticBind(std::make_unique<PixelConstantBuffer<PixelShaderConstant>>(gfx, cb2));
+		AddStaticBind(std::make_unique<PixelConstantBuffer<PixelShaderConstants>>(gfx, cb2));
 
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
 		{
@@ -83,10 +84,10 @@ Box::Box(Graphics& gfx,
 	}
 	AddBind(std::make_unique<TransformCbuf>(gfx, *this));
 
-	// Model deformation transform (per instance, not stored as bind)
-	DirectX::XMStoreFloat3x3(
-		&mt, 
-		DirectX::XMMatrixScaling(1.0f, 1.0f, bdist(rng))
+	// model deformation transform (per instance, not stored as bind)
+	dx::XMStoreFloat3x3(
+		&mt,
+		dx::XMMatrixScaling(1.0f, 1.0f, bdist(rng))
 	);
 }
 
@@ -102,7 +103,8 @@ void Box::Update(float dt) noexcept
 
 DirectX::XMMATRIX Box::GetTransformXM() const noexcept
 {
-	return DirectX::XMLoadFloat3x3(&mt) *
+	namespace dx = DirectX;
+	return dx::XMLoadFloat3x3(&mt) *
 		DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
 		DirectX::XMMatrixTranslation(r, 0.0f, 0.0f) *
 		DirectX::XMMatrixRotationRollPitchYaw(theta, phi, chi) *

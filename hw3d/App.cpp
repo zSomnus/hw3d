@@ -5,18 +5,14 @@
 #include <memory>
 #include <algorithm>
 #include "MyMath.h"
+#include <iterator>
 
 App::App() : wnd(800, 600, "Main Window")
 {
 	class Factory
 	{
 	public:
-		Factory(Graphics& gfx)
-			:
-			gfx(gfx)
-		{
-
-		}
+		Factory(Graphics& gfx) :gfx(gfx) {}
 		std::unique_ptr<Drawable> operator()()
 		{
 			switch (typedist(rng))
@@ -37,10 +33,11 @@ App::App() : wnd(800, 600, "Main Window")
 					odist, rdist, longdist, latdist
 					);
 			default:
-				assert(false && "bad drawable type in factory");
-				return {};
+				assert(false && "Bad drawable type in factory");
+				return{};
 			}
 		}
+
 	private:
 		Graphics& gfx;
 		std::mt19937 rng{ std::random_device{}() };
@@ -57,13 +54,13 @@ App::App() : wnd(800, 600, "Main Window")
 	Factory f(wnd.Gfx());
 	drawables.reserve(nDrawables);
 	std::generate_n(std::back_inserter(drawables), nDrawables, f);
-	
+
 	wnd.Gfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f));
 }
 
 void App::DoFrame()
 {
-	const auto dt = timer.Mark();
+	auto dt = timer.Mark();
 	wnd.Gfx().ClearBuffer(0.07f, 0.0f, 0.12f);
 	for (auto& d : drawables)
 	{
